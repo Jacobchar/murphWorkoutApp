@@ -1,6 +1,6 @@
 import {NavigationProp, ParamListBase} from '@react-navigation/native';
 import React, {FC, useState} from 'react';
-import {ImageBackground, TouchableOpacity, Text} from 'react-native';
+import {ImageBackground, TouchableOpacity, Text, View} from 'react-native';
 
 import globalStyles from '../config/styles';
 
@@ -13,7 +13,12 @@ const HistoryScreen: FC<IProps> = ({navigation}) => {
     // Background Image
     <ImageBackground
       style={[globalStyles.backgroundImage]}
-      source={require('../assets/background.jpg')}>
+      source={require('../assets/geometricBackground.jpg')}>
+      <View style={{flex: 1}}>
+        <Text style={[globalStyles.titleStyle, {paddingTop: 20}]}>
+          Workout History
+        </Text>
+      </View>
       {/* Start Button */}
       {/* <TouchableOpacity
         style={[globalStyles.buttonStyle]}

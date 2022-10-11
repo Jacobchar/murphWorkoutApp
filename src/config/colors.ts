@@ -1,15 +1,17 @@
 export interface ColorValue {
   WHITE: string;
   BLACK: string;
-  RED: string;
+  BACKGROUND: string;
+  SHADOW: string;
   GREY: string;
-  LIGHTGREY: string;
+  TEAL: string;
 }
 
 export const Colors: ColorValue = {
   WHITE: '#ffffff',
   BLACK: '#000000',
-  RED: '#ff0000',
-  GREY: '#c4c4c4',
-  LIGHTGREY: '#e0e0e0',
+  BACKGROUND: 'powderblue',
+  SHADOW: 'lightgrey',
+  GREY: 'grey',
+  TEAL: 'teal',
 };

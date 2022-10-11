@@ -1,0 +1,13 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/BungeeOutline-Regular.ttf",
+      "sha1": "ffe50ceb58681fd222395e012295a11c6da0d054"
+    },
+    {
+      "path": "src/assets/fonts/PhosphateInline-Regular.ttf",
+      "sha1": "a09fb012854b32c8b7008823425f6e976e6633ff"
+    }
+  ]
+}
