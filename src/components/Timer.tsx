@@ -75,8 +75,9 @@ const style = StyleSheet.create({
     justifyContent: 'space-between',
   },
   timer: {
-    flex: 2,
+    flex: 1.5,
     alignSelf: 'center',
+    justifyContent: 'center',
   },
   startResetButtons: {
     flex: 1,
@@ -107,7 +108,7 @@ const options = {
     width: '80%',
   },
   text: {
-    fontSize: 60,
+    fontSize: 70,
     color: '#FFF',
     marginLeft: 7,
   },
