@@ -51,6 +51,7 @@ const HistoryScreen: FC<props> = ({navigation}) => {
   // Import the data on mounting
   useEffect(() => {
     importData();
+    entryNum = 0;
   }, []);
 
   useEffect(() => {
@@ -62,7 +63,6 @@ const HistoryScreen: FC<props> = ({navigation}) => {
     // Increment the entry number and display our times
     entryNum++;
     let timeArray: number[] = JSON.parse(item[1]);
-    console.log(timeArray);
     return (
       <View style={{flex: 1, flexDirection: 'row', padding: 10}}>
         <Text style={style.text}> {entryNum}. </Text>
