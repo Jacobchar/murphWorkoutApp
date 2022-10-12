@@ -6,20 +6,23 @@ import {Colors} from '../config/colors';
 
 interface props {
   setReset: React.Dispatch<SetStateAction<boolean>>;
+  setTime: React.Dispatch<SetStateAction<number>>;
 }
 
-const Timer: FC<props> = () => {
+const Timer: FC<props> = props => {
   const [stopWatchRunning, setStopWatchRunning] = useState(false);
   const [resetStopwatch, setResetStopwatch] = useState(false);
 
   const toggleStart = () => {
     setStopWatchRunning(!stopWatchRunning);
+    setResetStopwatch(false);
+    props.setReset(false);
   };
 
   const resetStopWatch = () => {
     setStopWatchRunning(false);
     setResetStopwatch(true);
-    // props.setReset(true);
+    props.setReset(true);
   };
 
   return (
@@ -31,7 +34,7 @@ const Timer: FC<props> = () => {
           reset={resetStopwatch}
           options={options}
           getTime={(time: number) => {
-            console.log(time);
+            props.setTime(time);
           }}
         />
       </View>

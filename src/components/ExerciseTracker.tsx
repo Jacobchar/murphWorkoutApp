@@ -6,6 +6,7 @@ interface props {
   imageURI: typeof require;
   increment: number;
   total: number;
+  reset: boolean;
 }
 
 const ExerciseTracker: FC<props> = props => {
@@ -24,6 +25,13 @@ const ExerciseTracker: FC<props> = props => {
       setWorkoutDone(true);
     }
   }, [accumulatedWorkout]);
+
+  useEffect(() => {
+    if (props.reset) {
+      setAccumulatedWorkout(0);
+      setWorkoutDone(false);
+    }
+  }, [props.reset]);
 
   return (
     <View style={style.container}>

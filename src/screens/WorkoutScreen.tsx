@@ -3,7 +3,7 @@ import {
   ParamListBase,
   useFocusEffect,
 } from '@react-navigation/native';
-import React, {FC, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {
   ImageBackground,
   TouchableOpacity,
@@ -26,7 +26,8 @@ interface IProps {
 const WorkoutScreen: FC<IProps> = ({navigation}) => {
   const [firstMileDone, setFirstMileDone] = useState<boolean>(false);
   const [lastMileDone, setLastMileDone] = useState<boolean>(false);
-  const [resetPage, setReset] = useState(false);
+  const [resetPage, setReset] = useState<boolean>(false);
+  const [time, setTime] = useState<number>(0);
 
   const createTwoButtonAlert = () =>
     // Alert for exiting the workout screen
@@ -47,6 +48,16 @@ const WorkoutScreen: FC<IProps> = ({navigation}) => {
 
   // Back button handling
 
+  console.log(time);
+
+  // Reset Handling
+  useEffect(() => {
+    if (resetPage) {
+      setFirstMileDone(false);
+      setLastMileDone(false);
+    }
+  }, [resetPage]);
+
   return (
     // Background Image
     <ImageBackground
@@ -54,7 +65,7 @@ const WorkoutScreen: FC<IProps> = ({navigation}) => {
       source={require('../assets/background.jpg')}>
       {/* Timer Component */}
       <View style={{flex: 2}}>
-        <Timer setReset={setReset} />
+        <Timer setReset={setReset} setTime={setTime} />
       </View>
       {/* First Mile */}
       {!firstMileDone && (
@@ -73,6 +84,7 @@ const WorkoutScreen: FC<IProps> = ({navigation}) => {
           imageURI={require('../assets/pullup.png')}
           increment={5}
           total={100}
+          reset={resetPage}
         />
       </View>
       <View style={{flex: 1}}>
@@ -80,6 +92,7 @@ const WorkoutScreen: FC<IProps> = ({navigation}) => {
           imageURI={require('../assets/pushup.png')}
           increment={10}
           total={200}
+          reset={resetPage}
         />
       </View>
       <View style={{flex: 1}}>
@@ -87,6 +100,7 @@ const WorkoutScreen: FC<IProps> = ({navigation}) => {
           imageURI={require('../assets/squat.png')}
           increment={15}
           total={300}
+          reset={resetPage}
         />
       </View>
       {/* Last Mile */}
