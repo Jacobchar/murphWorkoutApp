@@ -43,12 +43,8 @@ const Timer: FC<props> = props => {
           style={style.startResetButtons}
           onPress={() => {
             toggleStart();
-            setResetStopwatch(false);
           }}>
-          <Text style={style.text}>
-            {' '}
-            {!stopWatchRunning ? 'Start' : 'Stop'}{' '}
-          </Text>
+          <Text style={style.text}>{!stopWatchRunning ? 'Start' : 'Stop'}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={style.startResetButtons}

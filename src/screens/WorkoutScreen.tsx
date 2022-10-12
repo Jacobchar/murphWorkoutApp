@@ -13,42 +13,68 @@ import {
   BackHandler,
   StyleSheet,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Timer from '../components/Timer';
 import ExerciseTracker from '../components/ExerciseTracker';
 
 import globalStyles from '../config/styles';
 import {Colors} from '../config/colors';
 
-interface IProps {
+// Create the array for our first mile time, second mile start time, and total time
+var timeArray: number[] = [];
+
+interface props {
   navigation: NavigationProp<ParamListBase>;
 }
 
-const WorkoutScreen: FC<IProps> = ({navigation}) => {
+const WorkoutScreen: FC<props> = ({navigation}) => {
   const [firstMileDone, setFirstMileDone] = useState<boolean>(false);
   const [lastMileDone, setLastMileDone] = useState<boolean>(false);
+  const [pullUpsDone, setPullUpsDone] = useState<boolean>(false);
+  const [pushupsDone, setPushupsDone] = useState<boolean>(false);
+  const [squatsDone, setSquatsDone] = useState<boolean>(false);
   const [resetPage, setReset] = useState<boolean>(false);
   const [time, setTime] = useState<number>(0);
+
+  // Create a new log date for the workout
+  var dateTime = new Date();
+
+  const saveData = async () => {
+    console.log('Log added!');
+    console.log(dateTime.toString());
+    console.log(JSON.stringify(timeArray));
+    try {
+      await AsyncStorage.setItem(
+        dateTime.toString(),
+        JSON.stringify(timeArray),
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const createTwoButtonAlert = () =>
     // Alert for exiting the workout screen
     Alert.alert('Finish Workout', 'Are you ready to log your workout time?', [
       {
         text: 'No',
-        onPress: () => console.log('Cancel Pressed'),
+        onPress: () => {
+          setLastMileDone(false);
+        },
         style: 'cancel',
       },
       {
         text: 'Yes',
         onPress: () => {
-          // Save the times in a new log
+          // Save the finish time and store it in our log
+          timeArray[2] = time;
+          saveData();
           navigation.navigate('ResultsPage');
         },
       },
     ]);
 
   // Back button handling
-
-  console.log(time);
 
   // Reset Handling
   useEffect(() => {
@@ -57,6 +83,15 @@ const WorkoutScreen: FC<IProps> = ({navigation}) => {
       setLastMileDone(false);
     }
   }, [resetPage]);
+
+  // Store the times associated with the miles
+  useEffect(() => {
+    if (firstMileDone && !(pullUpsDone || pushupsDone || squatsDone)) {
+      timeArray[0] = time;
+    } else if (firstMileDone && pullUpsDone && pushupsDone && squatsDone) {
+      timeArray[1] = time;
+    }
+  }, [firstMileDone, lastMileDone, pullUpsDone, pushupsDone, squatsDone]);
 
   return (
     // Background Image
@@ -84,6 +119,8 @@ const WorkoutScreen: FC<IProps> = ({navigation}) => {
           imageURI={require('../assets/pullup.png')}
           increment={5}
           total={100}
+          setWorkoutDone={setPullUpsDone}
+          workoutDone={pullUpsDone}
           reset={resetPage}
         />
       </View>
@@ -92,6 +129,8 @@ const WorkoutScreen: FC<IProps> = ({navigation}) => {
           imageURI={require('../assets/pushup.png')}
           increment={10}
           total={200}
+          setWorkoutDone={setPushupsDone}
+          workoutDone={pushupsDone}
           reset={resetPage}
         />
       </View>
@@ -100,6 +139,8 @@ const WorkoutScreen: FC<IProps> = ({navigation}) => {
           imageURI={require('../assets/squat.png')}
           increment={15}
           total={300}
+          setWorkoutDone={setSquatsDone}
+          workoutDone={squatsDone}
           reset={resetPage}
         />
       </View>
@@ -109,7 +150,6 @@ const WorkoutScreen: FC<IProps> = ({navigation}) => {
         <TouchableOpacity
           style={[style.mileButton, {flex: 0.5}]}
           onPress={() => {
-            setLastMileDone(true);
             createTwoButtonAlert();
           }}>
           <Text style={style.text}>Finish Last Mile</Text>

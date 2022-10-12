@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {FC, SetStateAction, useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
 import {Colors} from '../config/colors';
 
@@ -6,12 +6,13 @@ interface props {
   imageURI: typeof require;
   increment: number;
   total: number;
+  setWorkoutDone: React.Dispatch<SetStateAction<boolean>>;
+  workoutDone: boolean;
   reset: boolean;
 }
 
 const ExerciseTracker: FC<props> = props => {
   const [accumulatedWorkout, setAccumulatedWorkout] = useState<number>(0);
-  const [workoutDone, setWorkoutDone] = useState<boolean>(false);
 
   const incrementWorkout = () => {
     // If we are not yet at our total, increment the workout
@@ -22,20 +23,20 @@ const ExerciseTracker: FC<props> = props => {
 
   useEffect(() => {
     if (accumulatedWorkout == props.total) {
-      setWorkoutDone(true);
+      props.setWorkoutDone(true);
     }
   }, [accumulatedWorkout]);
 
   useEffect(() => {
     if (props.reset) {
       setAccumulatedWorkout(0);
-      setWorkoutDone(false);
+      props.setWorkoutDone(false);
     }
   }, [props.reset]);
 
   return (
     <View style={style.container}>
-      {!workoutDone && (
+      {!props.workoutDone && (
         <View style={style.threeElementContainer}>
           <Image
             style={style.workoutImage}
@@ -55,7 +56,7 @@ const ExerciseTracker: FC<props> = props => {
           </Text>
         </View>
       )}
-      {workoutDone && <Text style={style.completedText}>Completed!</Text>}
+      {props.workoutDone && <Text style={style.completedText}>Completed!</Text>}
     </View>
   );
 };
