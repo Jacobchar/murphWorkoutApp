@@ -9,6 +9,7 @@ import {
   Image,
   FlatList,
   ScrollView,
+  Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -24,7 +25,31 @@ const HistoryScreen: FC<props> = ({navigation}) => {
   const [historyList, setHistoryList] = useState<readonly KeyValuePair[]>([]);
   const [itemDeleted, setItemDeleted] = useState<boolean>(false);
 
+  // Flat list reverse numbering
   var entryNum: number = historyList.length + 1;
+
+  const createTwoButtonAlert = (item: KeyValuePair) =>
+    // Alert for exiting the workout screen
+    Alert.alert(
+      'Delete Log Entry',
+      'Are you sure you want to delete this entry?',
+      [
+        {
+          text: 'No',
+          onPress: () => {
+            // Do nothing
+          },
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () => {
+            // Delete the log entry
+            deleteLogEntry(item);
+          },
+        },
+      ],
+    );
 
   const importData = async () => {
     try {
@@ -70,10 +95,11 @@ const HistoryScreen: FC<props> = ({navigation}) => {
     return (
       <View style={{flex: 1, flexDirection: 'row', padding: 10}}>
         <Text style={style.text}> {entryNum}. </Text>
+        {/* <Text style={style.dateText}>{ item}/{ }</Text> */}
         <Text style={style.timeText}>{timeArray[2]}</Text>
         <TouchableOpacity
           style={style.deleteButton}
-          onPress={() => deleteLogEntry(item)}>
+          onPress={() => createTwoButtonAlert(item)}>
           <Image
             style={style.deleteImage}
             source={require('../assets/garbageCan.png')}
@@ -128,6 +154,14 @@ const style = StyleSheet.create({
     color: Colors.WHITE,
     fontFamily: 'sans serif medium',
     fontSize: 30,
+    alignSelf: 'center',
+  },
+  dateText: {
+    flex: 1,
+    textAlign: 'center',
+    color: Colors.BLACK,
+    fontFamily: 'sans serif medium',
+    fontSize: 20,
     alignSelf: 'center',
   },
   timeText: {
