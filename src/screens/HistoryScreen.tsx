@@ -55,7 +55,6 @@ const HistoryScreen: FC<props> = ({navigation}) => {
       const keys = await AsyncStorage.getAllKeys();
       const result = await AsyncStorage.multiGet(keys);
       setHistoryList(result);
-      console.log(historyList);
       return result;
     } catch (error) {
       console.error(error);
