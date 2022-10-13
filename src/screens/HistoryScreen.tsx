@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Image,
   FlatList,
+  ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -23,7 +24,7 @@ const HistoryScreen: FC<props> = ({navigation}) => {
   const [historyList, setHistoryList] = useState<readonly KeyValuePair[]>([]);
   const [itemDeleted, setItemDeleted] = useState<boolean>(false);
 
-  var entryNum: number = 0;
+  var entryNum: number = historyList.length + 1;
 
   const importData = async () => {
     try {
@@ -38,7 +39,7 @@ const HistoryScreen: FC<props> = ({navigation}) => {
     }
   };
 
-  const deleteLogEntry = async item => {
+  const deleteLogEntry = async (item: KeyValuePair) => {
     try {
       const keys = await AsyncStorage.removeItem(item[0]);
       setItemDeleted(true);
@@ -51,7 +52,6 @@ const HistoryScreen: FC<props> = ({navigation}) => {
   // Import the data on mounting
   useEffect(() => {
     importData();
-    entryNum = 0;
   }, []);
 
   useEffect(() => {
@@ -59,9 +59,13 @@ const HistoryScreen: FC<props> = ({navigation}) => {
     importData();
   }, [itemDeleted]);
 
-  const renderItem = item => {
+  useEffect(() => {
+    entryNum = historyList.length + 1;
+  });
+
+  const renderItem = (item: KeyValuePair) => {
     // Increment the entry number and display our times
-    entryNum++;
+    entryNum--;
     let timeArray: number[] = JSON.parse(item[1]);
     return (
       <View style={{flex: 1, flexDirection: 'row', padding: 10}}>
