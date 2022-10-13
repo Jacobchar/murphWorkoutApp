@@ -36,8 +36,13 @@ const WorkoutScreen: FC<props> = ({navigation}) => {
   const [resetPage, setReset] = useState<boolean>(false);
   const [time, setTime] = useState<number>(0);
 
-  // Create a new log date for the workout
-  var dateTime = new Date();
+  var dateTime: Date = new Date();
+
+  useEffect(() => {
+    setReset(false);
+    // Create a new log date for the workout
+    dateTime = new Date();
+  }, []);
 
   const saveData = async () => {
     console.log('Log added!');
@@ -69,7 +74,9 @@ const WorkoutScreen: FC<props> = ({navigation}) => {
           // Save the finish time and store it in our log
           timeArray[2] = time;
           saveData();
-          navigation.navigate('ResultsPage');
+          setReset(true);
+          dateTime = new Date();
+          navigation.navigate('HomePage');
         },
       },
     ]);
@@ -105,14 +112,18 @@ const WorkoutScreen: FC<props> = ({navigation}) => {
       {/* First Mile */}
       {!firstMileDone && (
         <TouchableOpacity
-          style={[style.mileButton, {flex: 0.5}]}
+          style={style.mileButton}
           onPress={() => {
             setFirstMileDone(true);
           }}>
           <Text style={style.text}>Finish First Mile</Text>
         </TouchableOpacity>
       )}
-      {firstMileDone && <Text style={style.completedText}>Completed!</Text>}
+      {firstMileDone && (
+        <View style={style.mileButton}>
+          <Text style={style.completedText}>Completed!</Text>
+        </View>
+      )}
       {/* Create a button component that uses an image, an incrementor, and a total */}
       <View style={{flex: 1}}>
         <ExerciseTracker
@@ -148,7 +159,7 @@ const WorkoutScreen: FC<props> = ({navigation}) => {
       {/* Finish Workout Button */}
       {!lastMileDone && (
         <TouchableOpacity
-          style={[style.mileButton, {flex: 0.5}]}
+          style={style.mileButton}
           onPress={() => {
             createTwoButtonAlert();
           }}>
@@ -190,6 +201,7 @@ const style = StyleSheet.create({
     alignSelf: 'center',
   },
   mileButton: {
+    flex: 0.5,
     justifyContent: 'center',
     borderRadius: 20,
     borderWidth: 3,
@@ -207,11 +219,11 @@ const style = StyleSheet.create({
     alignSelf: 'center',
   },
   completedText: {
-    flex: 0.5,
+    flex: 1,
     textAlign: 'center',
     color: Colors.BLACK,
     fontFamily: 'sans serif medium',
-    fontSize: 50,
+    fontSize: 42,
     fontWeight: 'bold',
     alignSelf: 'center',
   },

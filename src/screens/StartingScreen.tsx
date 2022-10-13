@@ -10,11 +10,11 @@ import {
 
 import globalStyles from '../config/styles';
 
-interface IProps {
+interface props {
   navigation: NavigationProp<ParamListBase>;
 }
 
-const StartingScreen: FC<IProps> = ({navigation}) => {
+const StartingScreen: FC<props> = ({navigation}) => {
   return (
     // Background Image
     <ImageBackground

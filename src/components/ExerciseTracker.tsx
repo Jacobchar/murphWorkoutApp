@@ -56,7 +56,16 @@ const ExerciseTracker: FC<props> = props => {
           </Text>
         </View>
       )}
-      {props.workoutDone && <Text style={style.completedText}>Completed!</Text>}
+      {props.workoutDone && (
+        <View style={style.threeElementContainer}>
+          <Image
+            style={style.workoutImage}
+            source={props.imageURI}
+            resizeMode="contain"
+          />
+          <Text style={style.completedText}>Completed!</Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -83,7 +92,6 @@ const style = StyleSheet.create({
     },
     shadowOpacity: 0.8,
     shadowRadius: 50,
-    padding: 10,
     justifyContent: 'space-between',
   },
   workoutImage: {
@@ -116,11 +124,11 @@ const style = StyleSheet.create({
     alignSelf: 'center',
   },
   completedText: {
-    flex: 1,
+    flex: 2,
     textAlign: 'center',
     color: Colors.BLACK,
     fontFamily: 'sans serif medium',
-    fontSize: 70,
+    fontSize: 45,
     fontWeight: 'bold',
     alignSelf: 'center',
   },

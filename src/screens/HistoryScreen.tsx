@@ -8,14 +8,13 @@ import {
   StyleSheet,
   Image,
   FlatList,
-  ScrollView,
   Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import {KeyValuePair} from '@react-native-async-storage/async-storage/lib/typescript/types';
 import globalStyles from '../config/styles';
 import {Colors} from '../config/colors';
-import {KeyValuePair} from '@react-native-async-storage/async-storage/lib/typescript/types';
+import {timeDiff} from '../components/util/timeDiff';
 
 interface props {
   navigation: NavigationProp<ParamListBase>;
@@ -55,9 +54,8 @@ const HistoryScreen: FC<props> = ({navigation}) => {
     try {
       const keys = await AsyncStorage.getAllKeys();
       const result = await AsyncStorage.multiGet(keys);
-
       setHistoryList(result);
-
+      console.log(historyList);
       return result;
     } catch (error) {
       console.error(error);
@@ -91,12 +89,15 @@ const HistoryScreen: FC<props> = ({navigation}) => {
   const renderItem = (item: KeyValuePair) => {
     // Increment the entry number and display our times
     entryNum--;
-    let timeArray: number[] = JSON.parse(item[1]);
+    let timeArray: string[] = JSON.parse(item[1]);
     return (
       <View style={{flex: 1, flexDirection: 'row', padding: 10}}>
         <Text style={style.text}> {entryNum}. </Text>
-        {/* <Text style={style.dateText}>{ item}/{ }</Text> */}
+        <Text style={style.mileText}>{timeArray[0]}</Text>
         <Text style={style.timeText}>{timeArray[2]}</Text>
+        <Text style={style.mileText}>
+          {timeDiff(timeArray[2], timeArray[1])}
+        </Text>
         <TouchableOpacity
           style={style.deleteButton}
           onPress={() => createTwoButtonAlert(item)}>
@@ -113,13 +114,21 @@ const HistoryScreen: FC<props> = ({navigation}) => {
   return (
     // Background Image
     <ImageBackground
-      style={[globalStyles.backgroundImage]}
+      style={[globalStyles.backgroundImage, {flexDirection: 'column'}]}
       source={require('../assets/background.jpg')}>
       <View style={{flex: 1}}>
         <Text style={style.titleStyle}>Workout History</Text>
       </View>
       {/* History */}
-      <View style={style.container}>
+      <View style={[style.container, {flexDirection: 'column'}]}>
+        <View style={{flexDirection: 'row'}}>
+          <Text style={[style.text, {alignSelf: 'flex-end'}]}>
+            {' '}
+            First Mile{' '}
+          </Text>
+          <Text style={style.text}> Total </Text>
+          <Text style={[style.text, {alignSelf: 'flex-end'}]}> Last Mile </Text>
+        </View>
         <FlatList
           data={historyList}
           renderItem={({item}) => renderItem(item)}
@@ -153,15 +162,15 @@ const style = StyleSheet.create({
     textAlign: 'center',
     color: Colors.WHITE,
     fontFamily: 'sans serif medium',
-    fontSize: 30,
+    fontSize: 25,
     alignSelf: 'center',
   },
-  dateText: {
-    flex: 1,
+  mileText: {
+    flex: 2,
     textAlign: 'center',
     color: Colors.BLACK,
     fontFamily: 'sans serif medium',
-    fontSize: 20,
+    fontSize: 15,
     alignSelf: 'center',
   },
   timeText: {
@@ -169,7 +178,8 @@ const style = StyleSheet.create({
     textAlign: 'center',
     color: Colors.WHITE,
     fontFamily: 'sans serif medium',
-    fontSize: 40,
+    fontWeight: 'bold',
+    fontSize: 30,
     alignSelf: 'center',
   },
   deleteImage: {
