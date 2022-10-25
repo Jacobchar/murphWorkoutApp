@@ -21,13 +21,13 @@ interface props {
 }
 
 const HistoryScreen: FC<props> = ({navigation}) => {
-  const [historyList, setHistoryList] = useState<readonly KeyValuePair[]>([]);
+  const [historyDataList, setHistoryDataList] = useState<any[]>([]);
   const [itemDeleted, setItemDeleted] = useState<boolean>(false);
 
   // Flat list reverse numbering
-  var entryNum: number = historyList.length + 1;
+  var entryNum: number = historyDataList.length + 1;
 
-  const createTwoButtonAlert = (item: KeyValuePair) =>
+  const createTwoButtonAlert = (item: any[]) =>
     // Alert for exiting the workout screen
     Alert.alert(
       'Delete Log Entry',
@@ -54,14 +54,18 @@ const HistoryScreen: FC<props> = ({navigation}) => {
     try {
       const keys = await AsyncStorage.getAllKeys();
       const result = await AsyncStorage.multiGet(keys);
-      setHistoryList(result);
+      let sortedResults = Object.values(result);
+      sortedResults.sort((objA, objB) => {
+        return Number(new Date(objB[0])) - Number(new Date(objA[0]));
+      });
+      setHistoryDataList(sortedResults);
       return result;
     } catch (error) {
       console.error(error);
     }
   };
 
-  const deleteLogEntry = async (item: KeyValuePair) => {
+  const deleteLogEntry = async (item: any[]) => {
     try {
       const keys = await AsyncStorage.removeItem(item[0]);
       setItemDeleted(true);
@@ -82,10 +86,10 @@ const HistoryScreen: FC<props> = ({navigation}) => {
   }, [itemDeleted]);
 
   useEffect(() => {
-    entryNum = historyList.length + 1;
+    entryNum = historyDataList.length + 1;
   });
 
-  const renderItem = (item: KeyValuePair) => {
+  const renderItem = (item: any[]) => {
     // Increment the entry number and display our times
     entryNum--;
     let timeArray: string[] = JSON.parse(item[1]);
@@ -129,7 +133,7 @@ const HistoryScreen: FC<props> = ({navigation}) => {
           <Text style={[style.text, {alignSelf: 'flex-end'}]}> Last Mile </Text>
         </View>
         <FlatList
-          data={historyList}
+          data={historyDataList}
           renderItem={({item}) => renderItem(item)}
         />
       </View>
