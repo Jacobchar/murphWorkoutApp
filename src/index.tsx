@@ -3,12 +3,15 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {StartingScreen, WorkoutScreen, HistoryScreen} from './screens';
+import {LogBox} from 'react-native';
 
 export type StackParamList = {
   StartingScreen: undefined;
   WorkoutScreen: undefined;
   HistoryScreen: undefined;
 };
+
+LogBox.ignoreAllLogs();
 
 const Stack = createNativeStackNavigator();
 
