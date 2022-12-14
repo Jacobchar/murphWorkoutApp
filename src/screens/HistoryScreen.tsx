@@ -11,7 +11,6 @@ import {
   Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {KeyValuePair} from '@react-native-async-storage/async-storage/lib/typescript/types';
 import globalStyles from '../config/styles';
 import {Colors} from '../config/colors';
 import {timeDiff} from '../components/util/timeDiff';
@@ -50,14 +49,22 @@ const HistoryScreen: FC<props> = ({navigation}) => {
       ],
     );
 
+  const calcDateValue = (obj: Date): number => {
+    console.log(obj.getFullYear() * 2 + obj.getMonth() * 100 + obj.getDate());
+    return obj.getFullYear() * 2 + obj.getMonth() * 100 + obj.getDate();
+  };
+
   const importData = async () => {
     try {
       const keys = await AsyncStorage.getAllKeys();
       const result = await AsyncStorage.multiGet(keys);
       let sortedResults = Object.values(result);
       sortedResults.sort((objA, objB) => {
-        return Number(new Date(objB[0])) - Number(new Date(objA[0]));
+        return (
+          calcDateValue(new Date(objB[0])) - calcDateValue(new Date(objA[0]))
+        );
       });
+      console.log(sortedResults);
       setHistoryDataList(sortedResults);
       return result;
     } catch (error) {
