@@ -9,6 +9,7 @@ import {
   Image,
   FlatList,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import globalStyles from '../config/styles';
@@ -22,9 +23,7 @@ interface props {
 const HistoryScreen: FC<props> = ({navigation}) => {
   const [historyDataList, setHistoryDataList] = useState<any[]>([]);
   const [itemDeleted, setItemDeleted] = useState<boolean>(false);
-
-  // Flat list reverse numbering
-  var entryNum: number = historyDataList.length + 1;
+  const [dataReady, setDataReady] = useState<boolean>(false);
 
   const createTwoButtonAlert = (item: any[]) =>
     // Alert for exiting the workout screen
@@ -50,7 +49,6 @@ const HistoryScreen: FC<props> = ({navigation}) => {
     );
 
   const calcDateValue = (obj: Date): number => {
-    console.log(obj.getFullYear() * 2 + obj.getMonth() * 100 + obj.getDate());
     return obj.getFullYear() * 2 + obj.getMonth() * 100 + obj.getDate();
   };
 
@@ -64,8 +62,8 @@ const HistoryScreen: FC<props> = ({navigation}) => {
           calcDateValue(new Date(objB[0])) - calcDateValue(new Date(objA[0]))
         );
       });
-      console.log(sortedResults);
       setHistoryDataList(sortedResults);
+      setDataReady(true);
       return result;
     } catch (error) {
       console.error(error);
@@ -88,21 +86,63 @@ const HistoryScreen: FC<props> = ({navigation}) => {
   }, []);
 
   useEffect(() => {
-    setItemDeleted(false);
-    importData();
+    if (itemDeleted) {
+      setItemDeleted(false);
+      importData();
+    }
   }, [itemDeleted]);
 
-  useEffect(() => {
-    entryNum = historyDataList.length + 1;
-  });
-
-  const renderItem = (item: any[]) => {
+  const renderScreen = () => {
+    if (dataReady && historyDataList.length != 0) {
+      console.log('print damnit');
+      var numEntries: number = historyDataList.length;
+      console.log(numEntries);
+      return (
+        <View style={style.container}>
+          <View style={{flexDirection: 'row'}}>
+            <Text style={[style.text, {alignSelf: 'flex-end'}]}>
+              {' '}
+              First Mile{' '}
+            </Text>
+            <Text style={style.text}> Total </Text>
+            <Text style={[style.text, {alignSelf: 'flex-end'}]}>
+              {' '}
+              Last Mile{' '}
+            </Text>
+          </View>
+          <FlatList
+            data={historyDataList}
+            renderItem={({item, index}) => renderItem(item, index, numEntries)}
+          />
+        </View>
+      );
+    } else if (!dataReady) {
+      return (
+        <View style={style.container}>
+          <View>
+            <ActivityIndicator size="large" />
+          </View>
+        </View>
+      );
+    } else {
+      <View style={style.container}>
+        <View>
+          <Text style={[style.text, {textAlign: 'center'}]}>
+            No Logs Available
+          </Text>
+        </View>
+      </View>;
+    }
+  };
+  const renderItem = (item: any[], index: number, totalEntries: number) => {
     // Increment the entry number and display our times
-    entryNum--;
     let timeArray: string[] = JSON.parse(item[1]);
+
+    // Create the inverted list index using the index of the item and the total number of entries
+    var invertedIndex: number = totalEntries - index;
     return (
       <View style={{flex: 1, flexDirection: 'row', padding: 10}}>
-        <Text style={style.text}> {entryNum}. </Text>
+        <Text style={style.text}> {invertedIndex}. </Text>
         <Text style={style.mileText}>{timeArray[0]}</Text>
         <Text style={style.timeText}>{timeArray[2]}</Text>
         <Text style={style.mileText}>
@@ -130,20 +170,7 @@ const HistoryScreen: FC<props> = ({navigation}) => {
         <Text style={style.titleStyle}>Workout History</Text>
       </View>
       {/* History */}
-      <View style={[style.container, {flexDirection: 'column'}]}>
-        <View style={{flexDirection: 'row'}}>
-          <Text style={[style.text, {alignSelf: 'flex-end'}]}>
-            {' '}
-            First Mile{' '}
-          </Text>
-          <Text style={style.text}> Total </Text>
-          <Text style={[style.text, {alignSelf: 'flex-end'}]}> Last Mile </Text>
-        </View>
-        <FlatList
-          data={historyDataList}
-          renderItem={({item}) => renderItem(item)}
-        />
-      </View>
+      {renderScreen()}
     </ImageBackground>
   );
 };
@@ -153,7 +180,7 @@ export default HistoryScreen;
 const style = StyleSheet.create({
   container: {
     flex: 7,
-    flexDirection: 'row',
+    flexDirection: 'column',
   },
   deleteButton: {
     flex: 1,
